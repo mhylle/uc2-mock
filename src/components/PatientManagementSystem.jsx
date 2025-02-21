@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Search, User } from 'lucide-react';
 
 const PatientManagementSystem = () => {
-  const [currentScreen, setCurrentScreen] = useState('select'); // select, initial, final
+  const [currentScreen, setCurrentScreen] = useState('select'); // select, overview, initial, final
   const [expandedSection, setExpandedSection] = useState(null);
 
   const patients = [
@@ -125,7 +125,7 @@ const PatientManagementSystem = () => {
           <button
             key={patient.id}
             className="w-full p-4 bg-white rounded-lg shadow hover:bg-gray-50 text-left"
-            onClick={() => setCurrentScreen('initial')}
+            onClick={() => setCurrentScreen('overview')}
           >
             <div className="flex items-start space-x-4">
               <User className="w-6 h-6 text-gray-400" />
@@ -148,7 +148,11 @@ const PatientManagementSystem = () => {
       <div className="flex items-center space-x-4">
         <button 
           className="p-2 hover:bg-gray-100 rounded"
-          onClick={() => setCurrentScreen(currentScreen === 'final' ? 'initial' : 'select')}
+          onClick={() => {
+            if (currentScreen === 'final') setCurrentScreen('initial');
+            else if (currentScreen === 'initial') setCurrentScreen('overview');
+            else setCurrentScreen('select');
+          }}
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -251,17 +255,6 @@ const PatientManagementSystem = () => {
 
   const StateView = ({ showChanges = false }) => (
     <div className="max-w-3xl mx-auto p-4">
-      <div className="bg-white rounded-lg mb-4 p-4">
-        <h3 className="font-medium mb-2">Overblik</h3>
-        <p className="text-sm">
-          Testborger4011 er pensioneret murermester og bor sammen med sin hustru Cathrine i København.
-          Han har udfordringer med både demens og KOL, hvilket påvirker hans dagligdag på forskellige måder.
-        </p>
-        <p className="text-sm mt-2">
-          Cathrine arbejder stadig og står for det meste af husholdningen, samtidig med at hun hjælper med
-          deres fem børnebørn. Hun yder betydelig støtte, blandt andet ved at ringe hjem for at minde ham om måltider.
-        </p>
-      </div>
       <div className="bg-white rounded-lg">
         {(showChanges ? finalHealthConditions : initialHealthConditions).map((condition, index) => (
           <ConditionItem 
@@ -289,10 +282,72 @@ const PatientManagementSystem = () => {
     </div>
   );
 
+  const CitizenOverview = () => {
+    const diabetesCondition = initialHealthConditions.find(c => c.name === 'Diabetes Type 1');
+    const focusAreas = diabetesCondition?.details?.focusAreas || [];
+
+    return (
+      <div className="max-w-3xl mx-auto p-4">
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-6">
+            <h3 className="text-xl font-medium mb-4">Patient Overblik</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Navn</p>
+                  <p className="font-medium">{patients[0].name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">CPR</p>
+                  <p className="font-medium">{patients[0].id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Adresse</p>
+                  <p className="font-medium">{patients[0].address}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Primære diagnoser</p>
+                  <p className="font-medium">{patients[0].conditions}</p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <h4 className="font-medium mb-2">Patient Sammenfatning</h4>
+                <p className="text-sm text-gray-600">
+                  Testborger4011 er pensioneret murermester og bor sammen med sin hustru Cathrine i København.
+                  Han har udfordringer med både demens og KOL, hvilket påvirker hans dagligdag på forskellige måder.
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Cathrine arbejder stadig og står for det meste af husholdningen, samtidig med at hun hjælper med
+                  deres fem børnebørn. Hun yder betydelig støtte, blandt andet ved at ringe hjem for at minde ham om måltider.
+                </p>
+              </div>
+              <div className="mt-6">
+                <h4 className="font-medium mb-2">Aktuelle fokusområder</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm">
+                  {focusAreas.map((area, index) => (
+                    <li key={index}>{area}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <button 
+              className="mt-6 w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              onClick={() => setCurrentScreen('initial')}
+            >
+              Se detaljer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const MainContent = () => {
     switch (currentScreen) {
       case 'select':
         return <PatientSelect />;
+      case 'overview':
+        return <CitizenOverview />;
       case 'initial':
         return <StateView showChanges={false} />;
       case 'final':
