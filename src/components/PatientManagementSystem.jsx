@@ -20,7 +20,51 @@ const PatientManagementSystem = () => {
     }
   ];
 
-  const healthConditions = [
+  const initialHealthConditions = [
+    {
+      name: 'Problemer med mave og tarm',
+      details: 'Her tendens til forstoppelse'
+    },
+    {
+      name: 'Kroniske smerter',
+      details: 'Har daglig mange smerter grundet gigt. Mest udtalt i knæ. Smertelindring med paracetamol 1g x 4 dagligt.'
+    },
+    {
+      name: 'Emotionelle problemer',
+      details: null
+    },
+    {
+      name: 'Cirkulationsproblemer',
+      details: null
+    },
+    {
+      name: 'Diabetes Type 1',
+      details: {
+        diagnosisYear: '1995',
+        treatmentType: 'Insulinkrævende',
+        lastHbA1c: '58 mmol/mol (August 2024)',
+        measurementFrequency: '4 gange dagligt',
+        equipment: 'CGM (continuous glucose monitoring)',
+        followUp: [
+          'Diabetesambulatoriet hver 3. måned',
+          'Regelmæssige øjenundersøgelser',
+          'Fast tilknyttet fodterapeut'
+        ],
+        treatmentPlan: [
+          'Diætist-udarbejdet kostplan',
+          'Systematisk kulhydrattælling',
+          'Tilpasset motionsplan'
+        ],
+        focusAreas: [
+          'Blodsukkereregulering ifm. motion',
+          'Kostjustering ved træning',
+          'Forebyggelse af hypoglykæmi'
+        ]
+      }
+    }
+  ];
+
+  const finalHealthConditions = [
     {
       name: 'Problemer med mave og tarm',
       details: 'Her tendens til forstoppelse'
@@ -219,7 +263,7 @@ const PatientManagementSystem = () => {
         </p>
       </div>
       <div className="bg-white rounded-lg">
-        {healthConditions.map((condition, index) => (
+        {(showChanges ? finalHealthConditions : initialHealthConditions).map((condition, index) => (
           <ConditionItem 
             key={index} 
             condition={condition}
@@ -227,12 +271,19 @@ const PatientManagementSystem = () => {
           />
         ))}
       </div>
-      {!showChanges && (
+      {!showChanges ? (
         <button 
           className="mt-4 w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           onClick={() => setCurrentScreen('final')}
         >
           Vis ændringer
+        </button>
+      ) : (
+        <button 
+          className="mt-4 w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          onClick={() => setCurrentScreen('initial')}
+        >
+          Tilbage
         </button>
       )}
     </div>
